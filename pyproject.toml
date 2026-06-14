@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "acuris-agent-guard"
+version = "0.1.0"
+description = "Verify the merchant before your AI agent pays. A pre-pay storefront-legitimacy check (address + company-register + domain-binding + sanctions) for LangChain, CrewAI, Anthropic computer-use, or any MCP agent."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Acuris GmbH", email = "engineering@acuris-geo.com" }]
+requires-python = ">=3.9"
+keywords = ["agentic-commerce", "ai-agents", "fraud", "kyb", "merchant-verification", "mcp", "langchain", "computer-use"]
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Intended Audience :: Developers",
+]
+dependencies = []  # core is stdlib-only
+
+[project.optional-dependencies]
+mcp = ["mcp>=1.2.0"]
+langchain = ["langchain-core>=0.3.0"]
+dev = ["pytest>=8.0"]
+
+[project.urls]
+Homepage = "https://acuris-geo.com"
+Source = "https://github.com/Acuris-GmbH/acuris-agent-guard"
+
+[project.scripts]
+acuris-agent-guard-demo = "acuris_agent_guard.demo:main"
+acuris-agent-guard-mcp = "acuris_agent_guard.mcp_server:main"
+
+[tool.setuptools]
+packages = ["acuris_agent_guard"]
