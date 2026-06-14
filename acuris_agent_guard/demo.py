@@ -22,11 +22,14 @@ R = "\033[31m"; G = "\033[32m"; Y = "\033[33m"; B = "\033[36m"; DIM = "\033[2m";
 
 PRODUCT = "Aurora Linen Dress"
 PRICE = "€149"
-TASK = f'Buy the {PRODUCT} ({PRICE}) from the cheapest site you can find.'
+# The user delegates the purchase without quoting a price — the agent discovers
+# where and how much. The clone is what the agent surfaces FIRST (LLMs routinely
+# return look-alike domains as top results — Netcraft 2025), not "the cheapest".
+TASK = f"Buy the {PRODUCT} for me."
 
-# Two candidate stores the "agent" found; the cheapest is the clone.
-CLONE = {"domain": "aurora-boutique-official.shop", "name": "Aurora Linen", "price": "€119"}
-LEGIT = {"domain": "aurora-linen.example", "name": "Aurora Linen GmbH", "price": "€149"}
+# Two candidate stores the agent found; the clone is the top-ranked result.
+CLONE = {"domain": "aurora-boutique-official.shop", "name": "Aurora Linen"}
+LEGIT = {"domain": "aurora-linen.example", "name": "Aurora Linen GmbH"}
 
 
 def _p(msg, pause):
@@ -38,11 +41,11 @@ def _p(msg, pause):
 def run_unprotected(pause):
     print(f"\n{BOLD}{R}╶─ AGENT A — WITHOUT Acuris ─────────────────────────────╴{X}")
     _p(f"{DIM}task:{X} {TASK}", pause)
-    _p(f"  • search …  found 2 stores", pause)
-    _p(f"  • cheapest = {CLONE['domain']} ({CLONE['price']})  → choosing it", pause)
-    _p(f"  • open checkout", pause)
+    _p(f"  • search …  found 2 results", pause)
+    _p(f"  • top result = {CLONE['domain']}  → choosing it", pause)
+    _p(f"  • open checkout  ({PRICE})", pause)
     _p(f"  • {Y}autofill saved card + shipping address{X}", pause)
-    _p(f"  • submit payment …", pause)
+    _p(f"  • submit payment … {PRICE}", pause)
     _p(f"  {R}{BOLD}✗ Payment sent. {PRICE} gone. Goods never arrive.{X}", pause)
     _p(f"  {R}It was a clone of a real brand on a 6-day-old domain.{X}", pause)
     return False
@@ -51,8 +54,8 @@ def run_unprotected(pause):
 def run_protected(pause, verifier):
     print(f"\n{BOLD}{G}╶─ AGENT B — WITH Acuris guard ──────────────────────────╴{X}")
     _p(f"{DIM}task:{X} {TASK}", pause)
-    _p(f"  • search …  found 2 stores", pause)
-    _p(f"  • cheapest = {CLONE['domain']} ({CLONE['price']})  → choosing it", pause)
+    _p(f"  • search …  found 2 results", pause)
+    _p(f"  • top result = {CLONE['domain']}  → choosing it", pause)
     _p(f"  • {B}pre-pay check → acuris.verify_storefront(\"{CLONE['domain']}\"){X}", pause)
     try:
         pre_pay_guard(CLONE["domain"], name=CLONE["name"], verifier=verifier)
@@ -62,7 +65,7 @@ def run_protected(pause, verifier):
         _p(f"    {R}↩ {v.decision}{X}  domain_bound={v.domain_bound}  entity_resolves={v.entity_resolves}", pause)
         _p(f"    {R}reason: {v.reason}{X}", pause)
         _p(f"  {Y}✓ Purchase ABORTED. {PRICE} protected.{X}", pause)
-        _p(f"  • fall back to next store = {LEGIT['domain']} ({LEGIT['price']})", pause)
+        _p(f"  • fall back to next result = {LEGIT['domain']}", pause)
         _p(f"  • {B}pre-pay check → acuris.verify_storefront(\"{LEGIT['domain']}\"){X}", pause)
         try:
             ok = pre_pay_guard(LEGIT["domain"], name=LEGIT["name"], verifier=verifier)
@@ -71,7 +74,7 @@ def run_protected(pause, verifier):
         except PaymentBlocked:
             _p(f"  {Y}No verified store found — agent declines to pay. Funds safe.{X}", pause)
             return True
-    _p(f"  • pay {paid['price']} to verified merchant", pause)
+    _p(f"  • pay {PRICE} to verified merchant", pause)
     _p(f"  {G}{BOLD}✓ Paid the real {paid['name']}. Right goods, right seller.{X}", pause)
     return True
 
