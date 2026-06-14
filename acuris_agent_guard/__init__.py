@@ -9,7 +9,7 @@ from .client import StorefrontVerifier
 from .guard import PaymentBlocked, pre_pay_guard
 from .verdict import ABORT, PROCEED, REVIEW, StorefrontVerdict, decide
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __all__ = [
     "StorefrontVerifier",
     "pre_pay_guard",
