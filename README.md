@@ -24,17 +24,26 @@ domain, which a plain "does this company exist?" check waves through.
 
 ## See it in 10 seconds (zero setup, runs offline)
 
+Install into a virtualenv (recommended — modern Debian/Ubuntu block `pip` into
+the system Python with an `externally-managed-environment` error; that's an OS
+guard, not this package):
+
 ```bash
-pip install acuris-agent-guard
+python3 -m venv .venv && . .venv/bin/activate
+pip install git+https://github.com/Acuris-GmbH/acuris-agent-guard   # PyPI: pip install acuris-agent-guard (coming soon)
 python -m acuris_agent_guard.demo
 ```
+
+Prefer an isolated CLI? `pipx install git+https://github.com/Acuris-GmbH/acuris-agent-guard` works too.
 
 The same autonomous agent, same task, same clone — one checks the merchant first:
 
 ```
+task: Buy the Aurora Linen Dress for me.
+
 AGENT A — WITHOUT Acuris
-  • cheapest = aurora-boutique-official.shop (€119) → choosing it
-  • autofill saved card + shipping address
+  • top result = aurora-boutique-official.shop → choosing it
+  • autofill saved card + shipping address → submit payment … €149
   ✗ Payment sent. €149 gone. Goods never arrive.   (clone, 6-day-old domain)
 
 AGENT B — WITH Acuris guard
@@ -52,17 +61,21 @@ AGENT B — WITH Acuris guard
 ## Where it plugs into your loop
 
 ### Any MCP agent (Claude Desktop / Claude Code / others) — one config line
+First install the MCP extra into a venv (`pip install "acuris-agent-guard[mcp] @
+git+https://github.com/Acuris-GmbH/acuris-agent-guard"`), then point the config
+at that venv's Python (use the absolute path, or `pipx`, so it resolves
+regardless of the system Python):
 ```jsonc
 "mcpServers": {
   "acuris": {
-    "command": "python",
+    "command": "/path/to/.venv/bin/python",
     "args": ["-m", "acuris_agent_guard.mcp_server"],
     "env": { "ACURIS_API_KEY": "your-key" }   // omit for offline demo mode
   }
 }
 ```
 Then: *"Before paying any merchant, call `verify_storefront` and abort if it is
-not `safe_to_pay`."*  (`pip install "acuris-agent-guard[mcp]"`)
+not `safe_to_pay`."*
 
 ### Plain Python (framework-agnostic guardrail)
 ```python
