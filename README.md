@@ -30,11 +30,11 @@ guard, not this package):
 
 ```bash
 python3 -m venv .venv && . .venv/bin/activate
-pip install git+https://github.com/Acuris-GmbH/acuris-agent-guard   # PyPI: pip install acuris-agent-guard (coming soon)
+pip install acuris-agent-guard
 python -m acuris_agent_guard.demo
 ```
 
-Prefer an isolated CLI? `pipx install git+https://github.com/Acuris-GmbH/acuris-agent-guard` works too.
+Prefer an isolated CLI? `pipx install acuris-agent-guard` works too.
 
 The same autonomous agent, same task, same clone — one checks the merchant first:
 
@@ -61,10 +61,9 @@ AGENT B — WITH Acuris guard
 ## Where it plugs into your loop
 
 ### Any MCP agent (Claude Desktop / Claude Code / others) — one config line
-First install the MCP extra into a venv (`pip install "acuris-agent-guard[mcp] @
-git+https://github.com/Acuris-GmbH/acuris-agent-guard"`), then point the config
-at that venv's Python (use the absolute path, or `pipx`, so it resolves
-regardless of the system Python):
+First install the MCP extra into a venv (`pip install "acuris-agent-guard[mcp]"`),
+then point the config at that venv's Python (use the absolute path, or `pipx`, so
+it resolves regardless of the system Python):
 ```jsonc
 "mcpServers": {
   "acuris": {
