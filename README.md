@@ -108,9 +108,12 @@ v.reason          # "This domain is NOT bound to the registered company ..."
 v.to_dict()       # full structured signals + score + evidence
 ```
 
-The decision is derived from structured signals (`domain_bound`,
-`entity_resolves`, `sanctions_hit`, reachability), and **fails closed** — an
-unreachable/unverifiable storefront returns `REVIEW`, never a silent `PROCEED`.
+The decision maps the API's authoritative `recommended_action` (`proceed` →
+PROCEED, `review`/`do_not_proceed` → REVIEW, `block` → ABORT), so the SDK stays
+in lockstep with the engine's full policy instead of re-deriving its own, and
+**fails closed** — an unreachable/unverifiable storefront returns `REVIEW`,
+never a silent `PROCEED`, and a real merchant that simply can't be bound is
+`REVIEW`, never mislabeled a clone.
 
 ## Honest scope
 - A pre-pay **risk signal**, not fraud insurance, not a delivery guarantee, and

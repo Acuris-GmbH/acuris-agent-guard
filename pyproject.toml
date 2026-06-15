@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "acuris-agent-guard"
-version = "0.1.1"
+version = "0.1.2"
 description = "Verify the merchant before your AI agent pays. A pre-pay storefront-legitimacy check (address + company-register + domain-binding + sanctions) for LangChain, CrewAI, Anthropic computer-use, or any MCP agent."
 readme = "README.md"
 license = { text = "MIT" }

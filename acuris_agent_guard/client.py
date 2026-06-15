@@ -24,7 +24,7 @@ from .fixtures import demo_response
 from .verdict import StorefrontVerdict, decide
 
 DEFAULT_BASE_URL = "https://api.acuris-geo.com"
-USER_AGENT = "acuris-agent-guard/0.1.1"
+USER_AGENT = "acuris-agent-guard/0.1.2"
 
 
 class StorefrontVerifier:

@@ -16,11 +16,45 @@ def test_verified_proceeds():
     assert decide(r).decision == PROCEED
 
 
-def test_clone_aborts_on_unbound_domain():
+def test_recommended_action_drives_decision():
+    # The SDK maps the engine's authoritative action; it does NOT re-derive.
+    def mk(action):
+        return {"domain": "x.example", "domain_bound": False, "entity_resolves": True,
+                "recommended_action": action,
+                "layers": {"coherence": {"reachable": True}, "compliance": {}}}
+    assert decide(mk("proceed")).decision == PROCEED
+    assert decide(mk("review")).decision == REVIEW
+    assert decide(mk("do_not_proceed")).decision == REVIEW
+    assert decide(mk("block")).decision == ABORT
+
+
+def test_legit_review_store_is_not_called_a_clone():
+    # Regression (the 28-store bug): a real entity on a DV cert (unbound) gets
+    # engine action `review`. The SDK must return REVIEW, NOT ABORT "likely a clone".
+    r = {"domain": "walmart.com", "domain_bound": False, "entity_resolves": True,
+         "recommended_action": "review", "register_name": "Walmart Inc.",
+         "layers": {"coherence": {"reachable": True}, "compliance": {}}}
+    v = decide(r)
+    assert v.decision == REVIEW
+    assert "clone" not in v.reason.lower()
+
+
+def test_engine_block_surfaces_buyer_warning():
+    r = {"domain": "clone.shop", "domain_bound": False, "entity_resolves": True,
+         "recommended_action": "block",
+         "buyer_warning": "This domain is not the brand's verified domain. Do not pay.",
+         "layers": {"coherence": {"reachable": True}, "compliance": {}}}
+    v = decide(r)
+    assert v.decision == ABORT and "verified domain" in v.reason
+
+
+def test_unbound_without_action_is_review_not_clone():
+    # No recommended_action (old API / transport error) -> conservative fallback,
+    # never an ABORT-as-clone on a merely unbound store.
     r = {"domain": "clone.shop", "domain_bound": False, "entity_resolves": True,
          "layers": {"coherence": {"reachable": True}, "compliance": {}}}
     v = decide(r)
-    assert v.decision == ABORT and "clone" in v.reason.lower()
+    assert v.decision == REVIEW and "clone" not in v.reason.lower()
 
 
 def test_no_entity_aborts():
